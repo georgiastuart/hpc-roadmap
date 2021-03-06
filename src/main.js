@@ -8,6 +8,9 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 library.add()
 
+// Tailwind
+import './index.css'
+
 createApp(App)
     .use(router)
     .use(Vuex)

@@ -1,4 +1,7 @@
 {
+  "firestore": {
+
+  },
   "hosting": {
     "public": "dist",
     "ignore": [

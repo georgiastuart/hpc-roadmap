@@ -11,6 +11,7 @@ library.add()
 // Tailwind
 import './index.css'
 
+// Vue App
 createApp(App)
     .use(router)
     .use(Vuex)

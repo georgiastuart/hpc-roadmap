@@ -10,46 +10,54 @@
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-36">
         <div class="col-span-1 flex flex-col">
           <div v-for="info of tree.find(obj => obj.parent === currentParentList[currentParentList.length >= 3 ? currentParentList.length - 3 : 0].id).entries" :key="info.data.title">
-            <node v-bind:node-info="info" @parent-id="getNodes"></node>
+            <node v-bind:node-info="info" @parent-id="getNodes" @node-edit-info="editNode"></node>
           </div>
-          <button>Add</button>
         </div>
         <div v-if="depth > 0 && currentParentList.length > 1" class="col-span-1">
           <div v-for="info of tree.find(obj => obj.parent === currentParentList[currentParentList.length >= 3 ? currentParentList.length - 2 : 1].id).entries" :key="info.data.title">
-            <node v-bind:node-info="info" @parent-id="getNodes"></node>
+            <node v-bind:node-info="info" @parent-id="getNodes" @node-edit-info="editNode"></node>
           </div>
         </div>
         <div v-if="depth > 1 && currentParentList.length > 2" class="col-span-1">
           <div v-for="info of tree.find(obj => obj.parent === currentParentList[currentParentList.length >= 3 ? currentParentList.length - 1 : 2].id).entries" :key="info.data.title">
-            <node v-bind:node-info="info" @parent-id="getNodes"></node>
+            <node v-bind:node-info="info" @parent-id="getNodes" @node-edit-info="editNode"></node>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  <edit-node v-if="!hideEdit" v-bind:node-to-edit="nodeToEdit" @close-modal="setEditModalVisibility"/>
 </template>
 
 <script>
 import {db} from '@/firebase'
 import Node from "@/components/Node";
 import Navbar from "@/components/Navbar";
+import EditNode from "@/components/EditNode";
 
 export default {
   name: "Roadmap",
   components: {
     Node,
-    Navbar
+    Navbar,
+    EditNode
   },
   data() {
     return {
       tree: [],
       depth: -1,
       currentParentList: [],
-      prevParent: null,
-      currentParent: null
+      hideEdit: true,
+      nodeToEdit: null
     }
   },
   methods: {
+    setEditModalVisibility(value) {
+      this.hideEdit = value
+      this.nodeToEdit = null
+    },
+
     getNodes(parent, depth, includeCurrent) {
       console.log(parent, depth);
       if (this.depth >= 0 && this.depth > depth) {
@@ -147,6 +155,12 @@ export default {
           }
         }
       }
+    },
+
+    editNode(node) {
+      console.log('editing node ', node);
+      this.nodeToEdit = node;
+      this.hideEdit = false;
     }
   },
   mounted() {

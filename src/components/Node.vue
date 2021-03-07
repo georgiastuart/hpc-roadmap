@@ -1,23 +1,35 @@
 <template>
-<button class="roadmap-node" @click="emitID">
-  <div class="type">{{ nodeInfo.data.type.toUpperCase() }}</div>
-<div class="node-title">{{ nodeInfo.data.title }}</div>
-  <div class="mt-3">{{ nodeInfo.data.description }}</div>
-</button>
+  <div class="roadmap-node">
+    <div class="flex justify-between items-center">
+      <div class="type">{{ nodeInfo.data.type.toUpperCase() }}</div>
+      <button class="edit-btn">
+        <font-awesome-icon icon="edit" @click="editNode"></font-awesome-icon>
+      </button>
+    </div>
+    <div class="roadmap-node-body" @click="emitID">
+      <div class="node-title">{{ nodeInfo.data.title }}</div>
+      <div class="mt-3">{{ nodeInfo.data.description }}</div>
+    </div>
+  </div>
 </template>
 
 <script>
 export default {
   name: "Node",
   props: [
-      'nodeInfo'
+    'nodeInfo'
   ],
   emits: [
-      'parentId'
+    'parentId',
+    'nodeEditInfo'
   ],
   methods: {
     emitID() {
       this.$emit('parentId', this.nodeInfo.id, this.nodeInfo.depth + 1, false);
+    },
+
+    editNode() {
+      this.$emit('nodeEditInfo', this.nodeInfo);
     }
   },
   mounted() {
@@ -28,13 +40,17 @@ export default {
 
 <style scoped>
 .roadmap-node {
-  @apply bg-gray-200 rounded-xl text-gray-700 text-xl p-3 mb-3 w-full text-left;
+  @apply bg-gray-100 rounded-xl text-gray-700 text-xl p-3 mb-3 w-full text-left;
   font-family: 'Open Sans', sans-serif;
   outline: none;
 }
 
 .roadmap-node:focus {
   outline: none;
+}
+
+.roadmap-node-body {
+  cursor: pointer;
 }
 
 .node-title {
@@ -44,5 +60,14 @@ export default {
 
 .type {
   @apply text-xs text-gray-400;
+}
+
+.edit-btn {
+  @apply text-xs text-gray-400 p-2;
+  outline: none;
+}
+
+.edit-btn:focus {
+  outline: none;
 }
 </style>

@@ -6,7 +6,9 @@ import Vuex from 'vuex'
 // Font Awesome
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-library.add()
+import { faTimes, faPlusCircle, faEdit } from "@fortawesome/free-solid-svg-icons";
+
+library.add(faTimes, faPlusCircle, faEdit)
 
 // Tailwind
 import './index.css'

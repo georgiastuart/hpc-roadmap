@@ -1,5 +1,6 @@
 <template>
 <button class="roadmap-node" @click="emitID">
+  <div class="type">{{ nodeInfo.data.type.toUpperCase() }}</div>
 <div class="node-title">{{ nodeInfo.data.title }}</div>
   <div class="mt-3">{{ nodeInfo.data.description }}</div>
 </button>
@@ -16,11 +17,11 @@ export default {
   ],
   methods: {
     emitID() {
-      this.$emit('parentId', this.nodeInfo.id, this.nodeInfo.depth);
+      this.$emit('parentId', this.nodeInfo.id, this.nodeInfo.depth + 1, false);
     }
   },
   mounted() {
-    console.log(this.nodeInfo);
+    // console.log(this.nodeInfo);
   }
 }
 </script>
@@ -41,4 +42,7 @@ export default {
   font-family: 'Fredoka one', sans-serif;
 }
 
+.type {
+  @apply text-xs text-gray-400;
+}
 </style>

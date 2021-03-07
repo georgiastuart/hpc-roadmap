@@ -5,11 +5,8 @@
       <div class="flex justify-between items-center modal-title">
         <div v-if="edit" class="">Edit {{ title }}</div>
         <div v-else>Add New Node</div>
-
-<!--        <button class="exit-button"><font-awesome-icon icon="times"></font-awesome-icon></button>-->
       </div>
       <div class="modal-body">
-        {{ activeNode }}
         <div class="form-row">
           <div class="form-label">Title</div> <input class="form-input" v-model="nodeTitle" placeholder="Node Title" />
         </div>
@@ -54,10 +51,9 @@
 </template>
 
 <script>
+import { db } from "@/firebase";
+import clonedeep from 'lodash.clonedeep';
 
-function initialState() {
-
-}
 export default {
   name: "EditNode",
   props: {
@@ -71,23 +67,18 @@ export default {
       default: {}
     }
   },
-  watch: {
-    activeNode: {
-      handler: function() {
-        console.log('In watcher');
-      },
-      deep: true
-    }
-  },
-  emits: ['closeModal'],
+
+  emits: ['closeModal', 'updated'],
+
   data() {
     return {
       activeNode: this.nodeToEdit,
       nodeTitle: '',
-      nodeParent: '',
-      nodeId: '',
+      nodeParent: null,
+      nodeId: null,
       nodeDescription: '',
       nodeType: 'Category',
+      nodeLinks: [],
       nodeLinkTitles: [''],
       nodeLinkURLS: [''],
       nodeLinkDescriptions: ['']
@@ -105,16 +96,68 @@ export default {
     },
 
     openModal() {
-
+      if (this.activeNode !== null) {
+          this.nodeTitle = this.activeNode.data.title;
+          this.nodeParent = this.activeNode.data.parent;
+          this.nodeId = this.activeNode.id;
+          this.nodeDescription = this.activeNode.data.description;
+          this.nodeType = this.activeNode.data.type;
+          this.nodeType = this.nodeType.charAt(0).toUpperCase() + this.nodeType.slice(1);
+          if (this.activeNode.data.links !== null) {
+            this.nodeLinkTitles = [];
+            this.nodeLinkURLS = [];
+            this.nodeLinkDescriptions = [];
+            for (let link of this.activeNode.data.links) {
+              this.nodeLinkTitles.push(link.title);
+              this.nodeLinkDescriptions.push(link.description);
+              this.nodeLinkURLS.push(link.url);
+            }
+          }
+      }
     },
 
     cancel() {
       this.closeModal();
-      Object.assign(this.$data, initialState());
     },
+
     save() {
+      for (let index in this.nodeLinkTitles.length) {
+        this.nodeLinks.push({
+          title: this.nodeLinkTitles[index],
+          url: this.nodeLinkURLS[index],
+          description: this.nodeLinkDescriptions[index]
+        })
+      }
+
+      if (this.nodeId !== null) {
+        db.collection("roadmap")
+            .doc(this.nodeId)
+            .set({
+              title: this.nodeTitle,
+              description: this.nodeDescription,
+              links: this.nodeLinks,
+              type: this.nodeType
+            }, { merge: true })
+            .then(() => {
+              console.log("Updated " + this.nodeTitle + " record.");
+              let newNode = clonedeep(this.activeNode);
+              newNode.title = this.nodeTitle;
+              newNode.description = this.nodeDescription;
+              newNode.links = this.nodeLinks;
+              newNode.type = this.nodeType;
+              this.$emit('updated', newNode);
+            })
+            .catch((error) => {
+              console.error("Error writing document: ", error);
+            });
+      }
+
       this.closeModal();
     }
+  },
+
+  mounted() {
+    this.openModal();
   }
 }
 </script>
@@ -179,11 +222,11 @@ export default {
 }
 
 .cancel-button {
-  @apply bg-red-100;
+  @apply bg-red-600 text-white;
 }
 
 .save-button {
-  @apply bg-green-100;
+  @apply bg-green-600 text-white;
 }
 
 .form-dropdown {

@@ -9,7 +9,7 @@
     <div v-if="typeof tree[0] !== 'undefined'">
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-36">
         <div class="col-span-1 flex flex-col">
-          <div v-for="info of tree.find(obj => obj.parent === currentParentList[currentParentList.length >= 3 ? currentParentList.length - 3 : 0].id).entries" :key="info.data.title">
+          <div v-for="info of tree.find(obj => obj.parent === currentParentList[currentParentList.length >= 3 ? currentParentList.length - 3 : 0].id).entries" :key="info.data.title + info.data.description">
             <node v-bind:node-info="info" @parent-id="getNodes" @node-edit-info="editNode"></node>
           </div>
         </div>
@@ -27,7 +27,7 @@
     </div>
   </div>
 
-  <edit-node v-if="!hideEdit" v-bind:node-to-edit="nodeToEdit" @close-modal="setEditModalVisibility"/>
+  <edit-node v-if="!hideEdit" v-bind:node-to-edit="nodeToEdit" @close-modal="setEditModalVisibility" @updated="updateNode"/>
 </template>
 
 <script>
@@ -108,6 +108,17 @@ export default {
               });
         } else {
           this.getParentList(currentCol.entries[0]);
+        }
+      }
+    },
+
+    updateNode(node) {
+      for (let col of this.tree) {
+        let oldNodeIndex = col.entries.findIndex(obj => obj.id === node.id);
+
+        if (oldNodeIndex !== -1) {
+          console.log('Updating ' + col.entries[oldNodeIndex] + " to " + node);
+          col.entries[oldNodeIndex] = node;
         }
       }
     },

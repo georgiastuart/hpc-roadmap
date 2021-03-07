@@ -40,7 +40,7 @@ export default {
 
 <style scoped>
 .roadmap-node {
-  @apply bg-gray-100 rounded-xl text-gray-700 text-xl p-3 mb-3 w-full text-left;
+  @apply bg-gray-100 rounded-xl text-gray-700 text-xl p-5 mb-3 w-full text-left;
   font-family: 'Open Sans', sans-serif;
   outline: none;
 }
@@ -63,7 +63,7 @@ export default {
 }
 
 .edit-btn {
-  @apply text-xs text-gray-400 p-2;
+  @apply text-lg text-gray-400;
   outline: none;
 }
 

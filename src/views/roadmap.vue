@@ -2,7 +2,7 @@
   <navbar/>
   <div class="w-full h-full min-h-screen absolute">
     <svg xmlns="http://www.w3.org/2000/svg" id="svg-canvas" class="w-full h-full min-h-screen">
-      <g fill="transparent" stroke="black" stroke-width="5">
+      <g fill="transparent" stroke="gray" stroke-width="5">
         <path v-for="connector in connectorList" :key="connector" :id="connector"/>
       </g>
     </svg>
@@ -25,7 +25,7 @@
             <node v-bind:node-info="info" @parent-id="getNodes" @node-edit-info="editNode"></node>
           </div>
         </div>
-        <div v-if="depth > 1 && currentParentList.length > 2" class="col-span-1">
+        <div v-if="depth > 1 && currentParentList.length > 2 && typeof tree.find(obj => obj.parent === currentParentList[currentParentList.length >= 3 ? currentParentList.length - 1 : 2].id) !== 'undefined'" class="col-span-1">
           <div v-for="info of tree.find(obj => obj.parent === currentParentList[currentParentList.length >= 3 ? currentParentList.length - 1 : 2].id).entries" :key="info.data.title">
             <node v-bind:node-info="info" @parent-id="getNodes" @node-edit-info="editNode"></node>
           </div>
@@ -90,8 +90,8 @@ export default {
 
     getNodes(parent, depth, includeCurrent) {
       console.log(parent, depth);
-      if (this.depth >= 0 && this.depth > depth) {
-        this.depth = depth;
+      if (this.depth >= 0 && this.depth > depth && typeof this.tree.find(obj => obj.id === parent) !== 'undefined') {
+        this.depth = depth + 1;
         let parentNode = undefined;
         for (let col of this.tree) {
           parentNode = col.entries.find(obj => obj.id === parent);
@@ -112,8 +112,7 @@ export default {
           this.drawConnectors();
         })
       } else {
-        this.currentParent = parent;
-        this.depth = depth;
+        this.depth = depth + 1;
         let currentCol = this.tree.find(obj => obj.parent === parent);
         if (typeof currentCol === 'undefined') {
           let column = {

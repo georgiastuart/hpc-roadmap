@@ -18,17 +18,17 @@
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-36">
         <div class="col-span-1 flex flex-col">
           <div v-for="info of tree.find(obj => obj.parent === currentParentList[currentParentList.length >= 3 ? currentParentList.length - 3 : 0].id).entries" :key="info.data.title + info.data.description">
-            <node v-bind:node-info="info" @parent-id="getNodes" @node-edit-info="editNode"></node>
+            <node v-bind:active="typeof currentParentList.find(obj => obj.id === info.id) !== 'undefined'" v-bind:node-info="info" @parent-id="getNodes" @node-edit-info="editNode"></node>
           </div>
         </div>
         <div v-if="depth > 0 && currentParentList.length > 1" class="col-span-1">
           <div v-for="info of tree.find(obj => obj.parent === currentParentList[currentParentList.length >= 3 ? currentParentList.length - 2 : 1].id).entries" :key="info.data.title">
-            <node v-bind:node-info="info" @parent-id="getNodes" @node-edit-info="editNode"></node>
+            <node v-bind:active="typeof currentParentList.find(obj => obj.id === info.id) !== 'undefined'" v-bind:node-info="info" @parent-id="getNodes" @node-edit-info="editNode"></node>
           </div>
         </div>
         <div v-if="depth > 1 && currentParentList.length > 2 && typeof tree.find(obj => obj.parent === currentParentList[currentParentList.length >= 3 ? currentParentList.length - 1 : 2].id) !== 'undefined'" class="col-span-1">
           <div v-for="info of tree.find(obj => obj.parent === currentParentList[currentParentList.length >= 3 ? currentParentList.length - 1 : 2].id).entries" :key="info.data.title">
-            <node v-bind:node-info="info" @parent-id="getNodes" @node-edit-info="editNode"></node>
+            <node v-bind:active="typeof currentParentList.find(obj => obj.id === info.id) !== 'undefined'" v-bind:node-info="info" @parent-id="getNodes" @node-edit-info="editNode"></node>
           </div>
         </div>
       </div>
@@ -63,27 +63,6 @@ export default {
     }
   },
 
-  // watch: {
-  //   currentParentList: {
-  //     handler: function () {
-  //       this.getConnectorConfigs();
-  //       for (let connector of this.connectorList) {
-  //         this.drawConnector(connector);
-  //       }
-  //     },
-  //     deep: true
-  //   },
-  //   tree: {
-  //     handler: function () {
-  //       this.getConnectorConfigs();
-  //       for (let connector of this.connectorList) {
-  //         this.drawConnector(connector);
-  //       }
-  //     },
-  //     deep: true
-  //   },
-  // },
-
   methods: {
     setEditModalVisibility(value) {
       this.hideEdit = value
@@ -91,7 +70,6 @@ export default {
     },
 
     getNodes(parent, depth, includeCurrent) {
-      console.log(parent, depth);
       if (this.depth >= 0 && this.depth > depth && typeof this.tree.find(obj => obj.id === parent) !== 'undefined') {
         this.depth = depth + 1;
         let parentNode = undefined;
@@ -103,7 +81,6 @@ export default {
             break;
           }
         }
-        console.log('ParentNode', parentNode);
         if (typeof parentNode === 'undefined') {
           this.getParentList(null, true)
         } else {
@@ -161,7 +138,6 @@ export default {
         let oldNodeIndex = col.entries.findIndex(obj => obj.id === node.id);
 
         if (oldNodeIndex !== -1) {
-          console.log('Updating ' + col.entries[oldNodeIndex] + " to " + node);
           col.entries[oldNodeIndex] = node;
         }
       }
@@ -212,7 +188,6 @@ export default {
     },
 
     editNode(node) {
-      console.log('editing node ', node);
       this.nodeToEdit = node;
       this.hideEdit = false;
     },
@@ -235,13 +210,11 @@ export default {
 
     drawConnector(connector) {
       let arr = connector.split('-')
-      // console.log("Connector array", arr);
       let parentDiv = document.getElementById(arr[0]);
       let childDiv = document.getElementById(arr[1]);
       let arrowDiv = document.getElementById(connector);
       let header = document.getElementById('navbar');
 
-      // console.log(parentDiv, childDiv, arrowDiv);
       if (parentDiv !== null && childDiv !== null && arrowDiv !== null) {
         let startPos = {
           x: parentDiv.offsetLeft + parentDiv.offsetWidth,

@@ -1,5 +1,5 @@
 <template>
-  <div class="roadmap-node" :id="nodeInfo.id">
+  <div v-bind:class="{ 'roadmap-node': true, 'node-active': active }" :id="nodeInfo.id">
     <div class="flex justify-between items-center">
       <div class="type">{{ nodeInfo.data.type.toUpperCase() }}</div>
       <button class="edit-btn">
@@ -17,7 +17,8 @@
 export default {
   name: "Node",
   props: [
-    'nodeInfo'
+    'nodeInfo',
+    'active'
   ],
   emits: [
     'parentId',
@@ -41,7 +42,7 @@ export default {
 
 <style scoped>
 .roadmap-node {
-  @apply bg-gray-100 rounded-xl text-gray-700 text-xl p-5 mb-3 w-full text-left;
+  @apply bg-gray-100 border-2 border-gray-100 rounded-xl text-gray-700 text-xl p-5 mb-5 w-full text-left;
   font-family: 'Open Sans', sans-serif;
   outline: none;
 }
@@ -52,6 +53,10 @@ export default {
 
 .roadmap-node-body {
   cursor: pointer;
+}
+
+.node-active {
+  @apply  border-2 border-gray-700;
 }
 
 .node-title {

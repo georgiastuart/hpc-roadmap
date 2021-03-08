@@ -1,11 +1,18 @@
 <template>
   <navbar/>
-  <div class="flex mt-6">
+  <div class="w-full h-full min-h-screen absolute">
+    <svg xmlns="http://www.w3.org/2000/svg" id="svg-canvas" class="w-full h-full min-h-screen">
+      <g fill="transparent" stroke="black" stroke-width="5">
+        <path v-for="connector in connectorList" :key="connector" :id="connector"/>
+      </g>
+    </svg>
+  </div>
+  <div class="flex mt-6 z-10 relative">
     <ul v-if="typeof tree[0] !== 'undefined'" class="breadcrumbs">
       <li v-for="p in currentParentList" :key="p.id" @click="getNodes(p.id, p.depth, true)"><button>{{ p.name }}</button></li>
     </ul>
   </div>
-  <div class="min-w-full overflow-x-auto mt-6">
+  <div class="min-w-full overflow-x-auto mt-6 relative">
     <div v-if="typeof tree[0] !== 'undefined'">
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-36">
         <div class="col-span-1 flex flex-col">
@@ -49,9 +56,32 @@ export default {
       depth: -1,
       currentParentList: [],
       hideEdit: true,
-      nodeToEdit: null
+      nodeToEdit: null,
+      connectorList: []
     }
   },
+
+  // watch: {
+  //   currentParentList: {
+  //     handler: function () {
+  //       this.getConnectorConfigs();
+  //       for (let connector of this.connectorList) {
+  //         this.drawConnector(connector);
+  //       }
+  //     },
+  //     deep: true
+  //   },
+  //   tree: {
+  //     handler: function () {
+  //       this.getConnectorConfigs();
+  //       for (let connector of this.connectorList) {
+  //         this.drawConnector(connector);
+  //       }
+  //     },
+  //     deep: true
+  //   },
+  // },
+
   methods: {
     setEditModalVisibility(value) {
       this.hideEdit = value
@@ -75,6 +105,10 @@ export default {
         } else {
           this.getParentList(parentNode, includeCurrent);
         }
+
+        this.$nextTick(() => {
+          this.drawConnectors();
+        })
       } else {
         this.currentParent = parent;
         this.depth = depth;
@@ -102,6 +136,9 @@ export default {
                 } else {
                   this.getParentList({parent: column.parent}, false)
                 }
+                this.$nextTick(() => {
+                  this.drawConnectors();
+                })
               })
               .catch((error) => {
                 console.log("Error getting documents: ", error);
@@ -110,6 +147,10 @@ export default {
           this.getParentList(currentCol.entries[0]);
         }
       }
+
+      this.$nextTick(() => {
+        this.drawConnectors();
+      })
     },
 
     updateNode(node) {
@@ -149,7 +190,6 @@ export default {
         if (node !== null && node.parent !== null) {
           for (let col of this.tree) {
             let parentNode = col.entries.find(obj => obj.id === node.parent);
-            console.log('Parent node', parentNode);
             if (typeof parentNode !== 'undefined') {
               parentName = parentNode.data.title;
               parentId = parentNode.id;
@@ -172,10 +212,80 @@ export default {
       console.log('editing node ', node);
       this.nodeToEdit = node;
       this.hideEdit = false;
+    },
+
+    getConnectorConfigs() {
+      this.connectorList = [];
+
+      if (this.currentParentList.length > 0) {
+        for (let parent of this.currentParentList.slice().reverse()) {
+          if (parent.id !== null) {
+            let col = this.tree.find(obj => obj.parent === parent.id)
+
+            for (let child of col.entries) {
+              this.connectorList.push(parent.id + '-' + child.id);
+            }
+          }
+        }
+      }
+    },
+
+    drawConnector(connector) {
+      let arr = connector.split('-')
+      console.log("Connector array", arr);
+      let parentDiv = document.getElementById(arr[0]);
+      let childDiv = document.getElementById(arr[1]);
+      let arrowDiv = document.getElementById(connector);
+      let header = document.getElementById('navbar');
+
+      console.log(parentDiv, childDiv, arrowDiv);
+      if (parentDiv !== null && childDiv !== null && arrowDiv !== null) {
+        let startPos = {
+          x: parentDiv.offsetLeft + parentDiv.offsetWidth,
+          y: parentDiv.offsetTop + Math.floor(0.5 * parentDiv.offsetHeight) + header.offsetHeight
+        };
+
+        let endPos = {
+          x: childDiv.offsetLeft,
+          y: childDiv.offsetTop + Math.floor(0.5 * childDiv.offsetHeight) + header.offsetHeight
+        }
+
+        let midPos1 = {
+          x: Math.floor((startPos.x + endPos.x) / 2),
+          y: startPos.y
+        }
+
+        let midPos2 = {
+          x: Math.floor((startPos.x + endPos.x) / 2),
+          y: endPos.y
+        }
+
+        let connectorString =
+            "M " + startPos.x + " " + startPos.y +
+            " C " + midPos1.x + " " + midPos1.y +
+            ", " + midPos2.x + " " + midPos2.y +
+            ", " + endPos.x + " " + endPos.y;
+
+        arrowDiv.setAttribute("d", connectorString);
+      }
+    },
+
+    drawConnectors() {
+      this.getConnectorConfigs();
+      this.$nextTick(() => {
+        for (let connector of this.connectorList) {
+          this.drawConnector(connector);
+        }
+      })
     }
   },
   mounted() {
     this.getNodes(null, 0);
+    window.addEventListener('resize', this.drawConnectors)
+  },
+
+  beforeUnmount() {
+    window.removeEventListener('resize', this.drawConnectors)
   }
 }
 </script>

@@ -1,8 +1,7 @@
 <template>
-<div class="w-full flex justify-between my-3 pb-3 border-b border-gray-200">
-  <h1>The High Performance Computing Roadmap</h1>
+<div class="w-full flex justify-between mb-3 py-5 border-b border-gray-200" id="navbar">
+  <h1>The HPC Roadmap</h1>
   <div class="flex items-center">
-    <div class="nav-item pr-5">Roadmap</div>
     <div class="nav-item pr-5">Checklist</div>
     <div class="nav-item">Log In</div>
   </div>

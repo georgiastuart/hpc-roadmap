@@ -1,5 +1,5 @@
 <template>
-  <div class="roadmap-node">
+  <div class="roadmap-node" :id="nodeInfo.id">
     <div class="flex justify-between items-center">
       <div class="type">{{ nodeInfo.data.type.toUpperCase() }}</div>
       <button class="edit-btn">

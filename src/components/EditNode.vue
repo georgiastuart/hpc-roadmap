@@ -165,7 +165,7 @@ export default {
 <style scoped>
 
 .overlay {
-  @apply bg-gray-400 opacity-75 w-full h-full absolute top-0 left-0;
+  @apply bg-gray-400 opacity-75 w-full h-full min-h-screen absolute top-0 left-0;
 }
 
 .modal-container {

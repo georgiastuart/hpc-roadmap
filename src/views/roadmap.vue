@@ -1,4 +1,5 @@
 <template>
+  <div class="container mx-auto relative">
   <navbar/>
   <div class="w-full h-full min-h-screen absolute">
     <svg xmlns="http://www.w3.org/2000/svg" id="svg-canvas" class="w-full h-full min-h-screen">
@@ -32,6 +33,7 @@
         </div>
       </div>
     </div>
+  </div>
   </div>
 
   <edit-node v-if="!hideEdit" v-bind:node-to-edit="nodeToEdit" @close-modal="setEditModalVisibility" @updated="updateNode"/>

@@ -25,6 +25,7 @@ export default {
   ],
   methods: {
     emitID() {
+      console.log('In emit', this.nodeInfo.id, this.nodeInfo.depth);
       this.$emit('parentId', this.nodeInfo.id, this.nodeInfo.depth + 1, false);
     },
 

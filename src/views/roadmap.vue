@@ -96,14 +96,16 @@ export default {
         for (let col of this.tree) {
           parentNode = col.entries.find(obj => obj.id === parent);
 
+
           if (typeof parentNode !== 'undefined') {
             break;
           }
         }
+        console.log('ParentNode', parentNode);
         if (typeof parentNode === 'undefined') {
-          this.getParentList(null, false)
+          this.getParentList(null, true)
         } else {
-          this.getParentList(parentNode, includeCurrent);
+          this.getParentList(parentNode, true);
         }
 
         this.$nextTick(() => {
@@ -187,7 +189,7 @@ export default {
           });
         }
       } else {
-        if (node !== null && node.parent !== null) {
+        if (typeof node !== 'undefined' && node !== null && node.parent !== null) {
           for (let col of this.tree) {
             let parentNode = col.entries.find(obj => obj.id === node.parent);
             if (typeof parentNode !== 'undefined') {
@@ -232,13 +234,13 @@ export default {
 
     drawConnector(connector) {
       let arr = connector.split('-')
-      console.log("Connector array", arr);
+      // console.log("Connector array", arr);
       let parentDiv = document.getElementById(arr[0]);
       let childDiv = document.getElementById(arr[1]);
       let arrowDiv = document.getElementById(connector);
       let header = document.getElementById('navbar');
 
-      console.log(parentDiv, childDiv, arrowDiv);
+      // console.log(parentDiv, childDiv, arrowDiv);
       if (parentDiv !== null && childDiv !== null && arrowDiv !== null) {
         let startPos = {
           x: parentDiv.offsetLeft + parentDiv.offsetWidth,

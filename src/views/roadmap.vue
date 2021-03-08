@@ -3,7 +3,7 @@
   <navbar/>
   <div class="w-full h-full min-h-screen absolute">
     <svg xmlns="http://www.w3.org/2000/svg" id="svg-canvas" class="w-full h-full min-h-screen">
-      <g fill="transparent" stroke="gray" stroke-width="5">
+      <g fill="transparent" stroke="#374151" stroke-width="5">
         <path v-for="connector in connectorList" :key="connector" :id="connector"/>
       </g>
     </svg>

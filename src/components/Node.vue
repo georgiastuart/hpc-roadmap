@@ -55,16 +55,17 @@ export default {
 }
 
 .node-title {
-  @apply py-3 border-b border-gray-400 text-2xl;
+  @apply py-3 border-b border-gray-400 text-2xl text-gray-700;
   font-family: 'Fredoka one', sans-serif;
 }
 
 .type {
-  @apply text-xs text-gray-400;
+  @apply text-sm text-gray-500;
+  font-family: 'Unica one', cursive;
 }
 
 .edit-btn {
-  @apply text-lg text-gray-400;
+  @apply text-lg text-gray-500;
   outline: none;
 }
 

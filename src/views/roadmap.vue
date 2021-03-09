@@ -70,27 +70,27 @@ export default {
     },
 
     getNodes(parent, depth, includeCurrent) {
-      if (this.depth >= 0 && this.depth > depth && typeof this.tree.find(obj => obj.id === parent) !== 'undefined') {
-        this.depth = depth + 1;
-        let parentNode = undefined;
-        for (let col of this.tree) {
-          parentNode = col.entries.find(obj => obj.id === parent);
-
-
-          if (typeof parentNode !== 'undefined') {
-            break;
-          }
-        }
-        if (typeof parentNode === 'undefined') {
-          this.getParentList(null, true)
-        } else {
-          this.getParentList(parentNode, true);
-        }
-
-        this.$nextTick(() => {
-          this.drawConnectors();
-        })
-      } else {
+      // console.log(this.depth >= 0, this.depth >= depth, typeof this.tree.find(obj => obj.id === parent) !== 'undefined')
+      // if (this.depth >= 0 && this.depth >= depth && typeof this.tree.find(obj => obj.id === parent) !== 'undefined') {
+      //   this.depth = depth + 1;
+      //   let parentNode = undefined;
+      //   for (let col of this.tree) {
+      //     parentNode = col.entries.find(obj => obj.id === parent);
+      //
+      //     if (typeof parentNode !== 'undefined') {
+      //       break;
+      //     }
+      //   }
+      //   if (typeof parentNode === 'undefined') {
+      //     this.getParentList(null, true)
+      //   } else {
+      //     this.getParentList(parentNode, true);
+      //   }
+      //
+      //   this.$nextTick(() => {
+      //     this.drawConnectors();
+      //   })
+      // } else {
         this.depth = depth + 1;
         let currentCol = this.tree.find(obj => obj.parent === parent);
         if (typeof currentCol === 'undefined') {
@@ -102,6 +102,7 @@ export default {
               .where('parent', '==', parent)
               .get()
               .then((querySnapshot) => {
+                // console.log('Queried ', querySnapshot, this.tree);
                 querySnapshot.forEach((doc) => {
                   column.entries.push({
                     parent: parent,
@@ -124,9 +125,9 @@ export default {
                 console.log("Error getting documents: ", error);
               });
         } else {
-          this.getParentList(currentCol.entries[0]);
+          this.getParentList({parent: currentCol.parent}, false);
         }
-      }
+      // }
 
       this.$nextTick(() => {
         this.drawConnectors();
@@ -196,12 +197,14 @@ export default {
       this.connectorList = [];
 
       if (this.currentParentList.length > 0) {
-        for (let parent of this.currentParentList.slice().reverse()) {
-          if (parent.id !== null) {
-            let col = this.tree.find(obj => obj.parent === parent.id)
+        let len = this.currentParentList.length
+        console.log(len);
+        for (let parentIndex = 0; parentIndex < (len >= 2 ? 2 : len); parentIndex++) {
+          if (this.currentParentList[len - 1 - parentIndex].id !== null) {
+            let col = this.tree.find(obj => obj.parent === this.currentParentList[len - 1 - parentIndex].id)
 
             for (let child of col.entries) {
-              this.connectorList.push(parent.id + '-' + child.id);
+              this.connectorList.push(this.currentParentList[len - 1 - parentIndex].id + '-' + child.id);
             }
           }
         }
